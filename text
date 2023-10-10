@@ -1,0 +1,601 @@
+// Criar uma cena, uma câmera e um renderizador
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Criar uma luz ambiente
+var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+// Criar uma luz direcional
+var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(1, 1, 1);
+scene.add(directionalLight);
+
+// Criar um grupo para armazenar as peças do tetris
+var tetrisGroup = new THREE.Group();
+scene.add(tetrisGroup);
+
+// Criar um array para armazenar as cores das peças do tetris
+var colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+
+// Criar um array para armazenar as formas das peças do tetris
+var shapes = [
+    // I
+    [
+        [1, 1, 1, 1]
+    ],
+    // O
+    [
+        [1, 1],
+        [1, 1]
+    ],
+    // T
+    [
+        [0, 1, 0],
+        [1, 1, 1]
+    ],
+    // L
+    [
+        [0, 0, 1],
+        [1, 1, 1]
+    ],
+    // J
+    [
+        [1, 0, 0],
+        [1, 1, 1]
+    ],
+    // S
+    [
+        [0, 1, 1],
+        [1, 1, 0]
+    ],
+    // Z
+    [
+        [1, 1, 0],
+        [0, 1, 1]
+    ]
+];
+
+// Criar uma classe para representar uma peça do tetris
+class Tetromino {
+    constructor(shapeIndex) {
+        // Escolher uma forma aleatória se não for especificada
+        if (shapeIndex === undefined) {
+            shapeIndex = Math.floor(Math.random() * shapes.length);
+        }
+        // Obter a forma e a cor correspondente
+        this.shape = shapes[shapeIndex];
+        this.color = colors[shapeIndex];
+        // Criar um grupo para armazenar os blocos da peça
+        this.group = new THREE.Group();
+        // Adicionar os blocos da peça ao grupo
+        for (var i = 0; i < this.shape.length; i++) {
+            for (var j = 0; j < this.shape[i].length; j++) {
+                if (this.shape[i][j] === 1) {
+                    // Criar um bloco com a cor da peça
+                    var block = new THREE.Mesh(
+                        new THREE.BoxGeometry(1, 1, 1),
+                        new THREE.MeshLambertMaterial({color: this.color})
+                    );
+                    // Posicionar o bloco de acordo com a forma da peça
+                    block.position.set(j - this.shape[i].length / 2 + 0.5,
+                                       -i + this.shape.length / 2 - 0.5,
+                                       -10);
+                    // Adicionar o bloco ao grupo da peça
+                    this.group.add(block);
+                }
+            }
+        }
+        // Adicionar o grupo da peça ao grupo do tetris
+        tetrisGroup.add(this.group);
+        // Inicializar a posição e a rotação da peça
+        this.x = Math.floor(Math.random() * (10 - this.shape[0].length));
+        this.y = -2;
+        this.angle = Math.floor(Math.random() * (4 - this.shape.length));
+        // Atualizar a posição e a rotação da peça de acordo com os atributos
+        this.update();
+    }
+
+    // Método para atualizar a posição e a rotação da peça de acordo com os atributos
+    update() {
+        // Rotacionar o grupo da peça de acordo com o ângulo
+        this.group.rotation.z = this.angle * Math.PI / 2;
+        // Posicionar o grupo da peça de acordo com as coordenadas
+        this.group.position.x = this.x + this.shape[0].length / 2 - 0.5;
+        this.group.position.y = this.y - this.shape.length / 2 + 0.5;
+    }
+
+    // Método para mover a peça para a esquerda
+    moveLeft() {
+        // Decrementar a coordenada x
+        this.x--;
+        // Verificar se a peça está dentro dos limites e não colide com outras peças
+        if (this.x < 0 || this.collides()) {
+            // Incrementar a coordenada x
+            this.x++;
+            // Retornar falso para indicar que a peça não pode se mover
+            return false;
+        }
+        // Atualizar a posição da peça
+        this.update();
+        // Retornar verdadeiro para indicar que a peça pode se mover
+        return true;
+    }
+
+    // Método para mover a peça para a direita
+    moveRight() {
+        // Incrementar a coordenada x
+        this.x++;
+        // Verificar se a peça está dentro dos limites e não colide com outras peças
+        if (this.x > 10 - this.shape[0].length || this.collides()) {
+            // Decrementar a coordenada x
+            this.x--;
+            // Retornar falso para indicar que a peça não pode se mover
+            return false;
+        }
+        // Atualizar a posição da peça
+        this.update();
+        // Retornar verdadeiro para indicar que a peça pode se mover
+        return true;
+    }
+
+    // Método para mover a peça para baixo
+    moveDown() {
+        // Decrementar a coordenada y
+        this.y--;
+        // Verificar se a peça está dentro dos limites e não colide com outras peças
+        if (this.y < -20 + this.shape.length || this.collides()) {
+            // Incrementar a coordenada y
+            this.y++;
+            // Retornar falso para indicar que a peça não pode se mover
+            return false;
+        }
+        // Atualizar a posição da peça
+        this.update();
+        // Retornar verdadeiro para indicar que a peça pode se mover
+        return true;
+    }
+
+    // Método para rotacionar a peça no sentido horário
+    rotateClockwise() {
+        // Incrementar o ângulo
+        this.angle++;
+        // Verificar se o ângulo é válido de acordo com a forma da peça
+        if (this.angle > 3 - this.shape.length) {
+            // Zerar o ângulo
+            this.angle = 0;
+        }
+        // Verificar se a peça está dentro dos limites e não colide com outras peças
+        if (this.x < 0 || 
+            this.x > 10 - this.shape[0].length ||
+            this.y < -20 + this.shape.length ||
+            this.collides()) {
+            // Decrementar o ângulo
+            this.angle--;
+            // Verificar se o ângulo é válido de acordo com a forma da peça
+            if (this.angle < 0) {
+                // Atribuir o valor máximo ao ângulo
+                this.angle = 3 - this.shape.length;
+            }
+            // Retornar falso para indicar que a peça não pode rotacionar
+            return false;
+        }
+        // Atualizar a posição e a rotação da peça
+        this.update();
+        // Retornar verdadeiro para indicar que a peça pode rotacionar
+        return true;
+    }
+
+    // Método para rotacionar a peça no sentido anti-horário
+    rotateCounterClockwise() {
+         // Decrementar o ângulo
+         this.angle--;
+         // Verificar se o ângulo é válido de acordo com a forma da peça
+         if (this.angle < 0) {
+             // Atribuir o valor máximo ao ângulo
+             this.angle = 3 - this.shape.length;
+         }
+         // Verificar se a peça está dentro dos limites e não colide com outras peças
+         if (this.x < 0 || 
+             this.x > 10 - this.shape[0].length ||
+             this.y < -20 + this.shape.length ||
+             this.collides()) {
+             // Incrementar o ângulo
+             this.angle++;
+             // Verificar se o ângulo é válido de acordo com a forma da peça
+             this.angle > 3 - this.shape.length; {
+                // Zerar o ângulo
+                this.angle = 0;
+            }
+            // Retornar falso para indicar que a peça não pode rotacionar
+            return false;
+        }
+        // Atualizar a posição e a rotação da peça
+        this.update();
+        // Retornar verdadeiro para indicar que a peça pode rotacionar
+        return true;
+   }
+
+   // Método para verificar se a peça colide com outras peças ou com as bordas do tabuleiro
+   collides() {
+       // Obter a matriz de ocupação do tabuleiro
+       var board = game.board;
+       // Iterar sobre os blocos da peça
+       for (var i = 0; i < this.shape.length; i++) {
+           for (var j = 0; j < this.shape[i].length; j++) {
+               if (this.shape[i][j] === 1) {
+                   // Obter as coordenadas do bloco no tabuleiro
+                   var x = this.x + j;
+                   var y = this.y - i;
+                   // Rotacionar as coordenadas de acordo com o ângulo da peça
+                   switch (this.angle) {
+                       case 1:
+                           x = this.x + i;
+                           y = this.y + j - this.shape.length + 1;
+                           break;
+                       case 2:
+                           x = this.x - j + this.shape[0].length - 1;
+                           y = this.y + i - this.shape.length + 1;
+                           break;
+                       case 3:
+                           x = this.x - i + this.shape[0].length - 1;
+                           y = this.y - j;
+                           break;
+                   }
+                   // Verificar se as coordenadas estão fora dos limites do tabuleiro ou se há um bloco ocupando a posição
+                   if (x < 0 || x > 9 || y < 0 || y > 19 || board[y][x] !== 0) {
+                       // Retornar verdadeiro para indicar que há uma colisão
+                       return true;
+                   }
+               }
+           }
+       }
+       // Retornar falso para indicar que não há uma colisão
+       return false;
+   }
+
+   // Método para fixar a peça no tabuleiro
+   fix() {
+       // Obter a matriz de ocupação do tabuleiro
+       var board = game.board;
+       // Iterar sobre os blocos da peça
+       for (var i = 0; i < this.shape.length; i++) {
+           for (var j = 0; j < this.shape[i].length; j++) {
+               if (this.shape[i][j] === 1) {
+                   // Obter as coordenadas do bloco no tabuleiro
+                   var x = this.x + j;
+                   var y = this.y - i;
+                   // Rotacionar as coordenadas de acordo com o ângulo da peça
+                   switch (this.angle) {
+                       case 1:
+                           x = this.x + i;
+                           y = this.y + j - this.shape.length + 1;
+                           break;
+                       case 2:
+                           x = this.x - j + this.shape[0].length - 1;
+                           y = this.y + i - this.shape.length + 1;
+                           break;
+                       case 3:
+                           x = this.x - i + this.shape[0].length - 1;
+                           y = this.y - j;
+                           break;
+                   }
+                   // Atribuir a cor da peça à posição correspondente na matriz do tabuleiro
+                   board[y][x] = this.color;
+               }
+           }
+       }
+   }
+}
+
+// Criar uma classe para representar o jogo do tetris
+class TetrisGame {
+   constructor() {
+       // Inicializar a pontuação e o nível do jogo
+       this.score = 0;
+       this.level = 1;
+       // Inicializar o intervalo de tempo entre as quedas das peças
+       this.dropInterval = 1000;
+       // Inicializar o contador de tempo
+       this.dropCounter = 0;
+       // Inicializar o estado do jogo
+       this.running = true;
+       // Inicializar a matriz de ocupação do tabuleiro com zeros
+       this.board = [];
+       for (var i = 0; i < 20; i++) {
+           var row = [];
+           for (var j = 0; j < 10; j++) {
+               row.push(0);
+           }
+           this.board.push(row);
+       }
+       // Criar uma peça atual e uma próxima
+       this.currentTetromino = new Tetromino();
+       this.nextTetromino = new Tetromino();
+       // Criar um grupo para armazenar os blocos do tabuleiro
+       this.boardGroup = new THREE.Group();
+       // Adicionar o grupo do tabuleiro à cena
+       scene.add(this.boardGroup);
+       // Criar um grupo para armazenar os blocos da próxima peça
+       this.nextGroup = new THREE.Group();
+       // Posicionar o grupo da próxima peça no canto superior direito da tela
+       this.nextGroup.position.set(8, 18, -10);
+       // Adicionar o grupo da próxima peça à cena
+       scene.add(this.nextGroup);
+       // Atualizar os blocos da próxima peça de acordo com a forma e a cor
+       this.updateNext();
+       // Criar um elemento de texto para mostrar a pontuação e o nível do jogo
+       this.textElement = document.createElement("div");
+       this.textElement.style.position = "absolute";
+       this.textElement.style.top = "10px";
+       this.textElement.style.left = "10px";
+       this.textElement.style.color = "white";
+       this.textElement.style.fontFamily = "Arial";
+       this.textElement.style.fontSize = "20px";
+       this.textElement.innerHTML = `Pontuação: ${this.score}<br>Nível: ${this.level}`;
+       document.body.appendChild(this.textElement);
+   }
+
+   // Método para atualizar o jogo de acordo com o tempo decorrido
+   update(deltaTime) {
+       // Verificar se o jogo está em execução
+       if (this.running) {
+           // Incrementar o contador de tempo
+           this.dropCounter += deltaTime;
+           // Verificar se o contador de tempo ultrapassou o intervalo de queda
+           if (this.dropCounter > this.dropInterval) {
+               // Zerar o contador de tempo
+               this.dropCounter = 0;
+               // Mover a peça atual para baixo
+               var moved = this.currentTetromino.moveDown();
+               // Verificar se a peça não pode se mover mais
+               if (!moved) {
+                   // Fixar a peça no tabuleiro
+                   this.currentTetromino.fix();
+                   // Remover as linhas completas do tabuleiro e atualizar a pontuação e o nível
+                   this.removeLines();
+                   // Verificar se o jogo acabou
+                   if (this.isGameOver()) {
+                       // Parar o jogo e mostrar uma mensagem de fim de jogo
+                       this.stop();
+                       alert("Fim de jogo!");
+                   } else {
+                       // Substituir a peça atual pela próxima e criar uma nova próxima peça
+                       this.currentTetromino = this.nextTetromino;
+                       this.nextTetromino = new Tetromino();
+                       // Atualizar os blocos da próxima peça de acordo com a forma e a cor
+                       this.updateNext();
+                   }
+               }
+           }
+           // Atualizar os blocos do tabuleiro de acordo com a matriz de ocupação
+           this.updateBoard();
+           // Atualizar o texto da pontuação e do nível do jogo
+           this.updateText();
+       }
+   }
+
+   // Método para atualizar os blocos do tabuleiro de acordo com a matriz de ocupação
+   updateBoard() {
+       // Remover todos os blocos do grupo do tabuleiro
+       while (this.boardGroup.children.length > 0) {
+           var block = this.boardGroup.children[0];
+           this.boardGroup.remove(block);
+           block.geometry.dispose();
+           block.material.dispose();
+           block = undefined;
+       }
+       // Iterar sobre as posições da matriz do tabuleiro
+       for (var i = 0; i < 20; i++) {
+           for (var j = 0; j < 10; j++) {
+               // Verificar se há uma cor na posição correspondente
+               if (this.board[i][j] !== 0) {
+                   // Criar um bloco com a cor da posição
+                   var block = new THREE.Mesh(
+                       new THREE.BoxGeometry(1, 1, 1),
+                       new THREE.MeshLambertMaterial({color: this.board[i][j]})
+                   );
+                   // Posicionar o bloco de acordo com as coordenadas da posição
+                   block.position.set(j - 4.5, -i + 9.5, -10);
+                   // Adicionar o bloco ao grupo do tabuleiro
+                   this.boardGroup.add(block);
+               }
+           }
+       }
+   }
+
+   // Método para atualizar os blocos da próxima peça de acordo com a forma e a cor
+   updateNext() {
+        // Remover todos os blocos do grupo da próxima peça
+        while (this.nextGroup.children.length > 0) {
+            var block = this.nextGroup.children[0];
+            this.nextGroup.remove(block);
+            block.geometry.dispose();
+            block.material.dispose();
+            block = undefined;
+        }
+        // Iterar sobre os blocos da próxima peça
+        for (var i = 0; i < this.nextTetromino.shape.length; i++) {
+            for (var j = 0; j < this.nextTetromino.shape[i].length; j++) {
+                if (this.nextTetromino.shape[i][j] === 1) {
+                    // Criar um bloco com a cor da próxima peça
+                    var block = new THREE.Mesh(
+                        new THREE.BoxGeometry(1, 1, 1),
+                        new THREE.MeshLambertMaterial({color: this.nextTetromino.color})
+                    );
+                    // Posicionar o bloco de acordo com a forma da próxima peça
+                    block.position.set(j - this.nextTetromino.shape[i].length / 2 + 0.5,
+                                       -i + this.nextTetromino.shape.length / 2 - 0.5,
+                                       0);
+                    // Adicionar o bloco ao grupo da próxima peça
+                    this.nextGroup.add(block);
+                }
+            }
+        }
+    }
+
+    // Método para atualizar o texto da pontuação e do nível do jogo
+    updateText() {
+        // Atribuir o valor da pontuação e do nível ao elemento de texto
+        this.textElement.innerHTML = `Pontuação: ${this.score}<br>Nível: ${this.level}`;
+    }
+
+    // Método para remover as linhas completas do tabuleiro e atualizar a pontuação e o nível
+    removeLines() {
+        // Inicializar o número de linhas removidas
+        var linesRemoved = 0;
+        // Iterar sobre as linhas do tabuleiro de baixo para cima
+        for (var i = 19; i >= 0; i--) {
+            // Verificar se a linha está completa
+            var isComplete = true;
+            for (var j = 0; j < 10; j++) {
+                if (this.board[i][j] === 0) {
+                    isComplete = false;
+                    break;
+                }
+            }
+            // Se a linha está completa
+            if (isComplete) {
+                // Incrementar o número de linhas removidas
+                linesRemoved++;
+                // Remover a linha da matriz do tabuleiro
+                this.board.splice(i, 1);
+                // Adicionar uma nova linha vazia no topo da matriz do tabuleiro
+                var newRow = [];
+                for (var j = 0; j < 10; j++) {
+                    newRow.push(0);
+                }
+                this.board.unshift(newRow);
+                // Incrementar o índice da iteração para não pular uma linha
+                i++;
+            }
+        }
+        // Se alguma linha foi removida
+        if (linesRemoved > 0) {
+            // Calcular os pontos ganhos de acordo com o número de linhas removidas e o nível atual
+            var points = [40, 100, 300, 1200][linesRemoved - 1] * this.level;
+            // Incrementar a pontuação com os pontos ganhos
+            this.score += points;
+            // Calcular o nível atual de acordo com a pontuação
+            this.level = Math.floor(this.score / 1000) + 1;
+            // Ajustar o intervalo de queda de acordo com o nível atual
+            this.dropInterval = Math.max(100, 1000 - (this.level - 1) * 100);
+        }
+    }
+
+    // Método para verificar se o jogo acabou
+    isGameOver() {
+        // Verificar se há algum bloco na linha superior do tabuleiro
+        for (var j = 0; j < 10; j++) {
+            if (this.board[0][j] !== 0) {
+                // Retornar verdadeiro para indicar que o jogo acabou
+                return true;
+            }
+        }
+        // Retornar falso para indicar que o jogo não acabou
+        return false;
+    }
+
+    // Método para parar o jogo
+    stop() {
+        // Alterar o estado do jogo para parado
+        this.running = false;
+    }
+
+    // Método para reiniciar o jogo
+    restart() {
+        // Alterar o estado do jogo para em execução
+        this.running = true;
+        // Zerar a pontuação e o nível do jogo
+        this.score = 0;
+        this.level = 1;
+        // Zerar o intervalo de queda e o contador de tempo
+        this.dropInterval = 1000;
+        this.dropCounter = 0;
+        // Limpar a matriz do tabuleiro
+        for (var i = 0; i < 20; i++) {
+            for (var j = 0; j < 10; j++) {
+                this.board[i][j] = 0;
+            }
+        }
+        // Criar uma nova peça atual e uma próxima
+        this.currentTetromino = new Tetromino();
+        this.nextTetromino = new Tetromino();
+        // Atualizar os blocos da próxima peça de acordo com a forma e a cor
+        this.updateNext();
+    }
+}
+
+// Criar uma instância do jogo do tetris
+var game = new TetrisGame();
+
+// Criar uma variável para armazenar o tempo anterior
+var previousTime = 0;
+
+// Criar uma função para animar o jogo
+function animate(time) {
+    // Calcular o tempo decorrido desde a última animação
+    var deltaTime = time - previousTime;
+    // Atualizar o tempo anterior
+    previousTime = time;
+    // Atualizar o jogo de acordo com o tempo decorrido
+    game.update(deltaTime);
+    // Renderizar a cena
+    renderer.render(scene, camera);
+    // Solicitar a próxima animação
+    requestAnimationFrame(animate);
+}
+
+// Solicitar a primeira animação
+requestAnimationFrame(animate);
+
+// Criar um objeto para armazenar o estado das teclas pressionadas
+var keys = {};
+
+// Adicionar um evento de tecla pressionada ao documento
+document.addEventListener("keydown", function(event) {
+    // Obter o código da tecla pressionada
+    var keyCode = event.keyCode;
+    // Verificar se a tecla não estava pressionada antes
+    if (!keys[keyCode]) {
+        // Atribuir verdadeiro ao estado da tecla
+        keys[keyCode] = true;
+        // Verificar se o jogo está em execução
+        if (game.running) {
+            // Verificar qual tecla foi pressionada e executar a ação correspondente
+            switch (keyCode) {
+                case 37: // Seta para esquerda
+                    game.currentTetromino.moveLeft();
+                    break;
+                case 39: // Seta para direita
+                    game.currentTetromino.moveRight();
+                    break;
+                case 40: // Seta para baixo
+                    game.currentTetromino.moveDown();
+                    break;
+                case 38: // Seta para cima
+                    game.currentTetromino.rotateClockwise();
+                    break;
+                case 90: // Tecla Z
+                    game.currentTetromino.rotateCounterClockwise();
+                    break;
+            }
+        } else {
+            // Se o jogo não está em execução, verificar se a tecla R foi pressionada para reiniciar o jogo
+            if (keyCode === 82) {
+                game.restart();
+            }
+        }
+    }
+});
+
+// Adicionar um evento de tecla solta ao documento
+document.addEventListener("keyup", function(event) {
+    // Obter o código da tecla solta
+    var keyCode = event.keyCode;
+    // Atribuir falso ao estado da tecla
+    keys[keyCode] = false;
+});

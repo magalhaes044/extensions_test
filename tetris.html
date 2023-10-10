@@ -1,615 +1,308 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-<script>
-// Criar uma cena, uma câmera e um renderizador
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-var renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+  <title>Prevenção da Dengue</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-// Criar uma luz ambiente
-var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
 
-// Criar uma luz direcional
-var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(1, 1, 1);
-scene.add(directionalLight);
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-// Criar um grupo para armazenar as peças do tetris
-var tetrisGroup = new THREE.Group();
-scene.add(tetrisGroup);
+    .header {
+      background-color: #800080;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
 
-// Criar um array para armazenar as cores das peças do tetris
-var colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+    .header h1 {
+      font-size: 36px;
+    }
 
-// Criar um array para armazenar as formas das peças do tetris
-var shapes = [
-    // I
-    [
-        [1, 1, 1, 1]
-    ],
-    // O
-    [
-        [1, 1],
-        [1, 1]
-    ],
-    // T
-    [
-        [0, 1, 0],
-        [1, 1, 1]
-    ],
-    // L
-    [
-        [0, 0, 1],
-        [1, 1, 1]
-    ],
-    // J
-    [
-        [1, 0, 0],
-        [1, 1, 1]
-    ],
-    // S
-    [
-        [0, 1, 1],
-        [1, 1, 0]
-    ],
-    // Z
-    [
-        [1, 1, 0],
-        [0, 1, 1]
-    ]
+    .nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: #e0e0e0;
+      padding: 10px;
+    }
+
+    .nav a {
+      color: #800080;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .nav a:hover {
+      color: white;
+      background-color: #800080;
+    }
+
+    .main {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      padding: 20px;
+    }
+
+    .main .card {
+      width: 30%;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .main .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+
+    .main .card h3 {
+      color: #800080;
+      padding: 10px;
+    }
+
+    .main .card p {
+      padding: 10px;
+    }
+
+    .main .card button {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #800080;
+      color: white;
+      font-weight: bold;
+    }
+
+    .main .card button:hover {
+      background-color: white;
+      color: #800080;
+    }
+
+    .footer {
+      background-color:#800080 ;
+      color:white ;
+       padding :20 px ;
+       text-align :center ;
+     }
+     
+     @media (max-width :768px ) {
+       .main .card {
+         width :45% ;
+       }
+     }
+     
+     @media (max-width :576px ) {
+       .main .card {
+         width :100% ;
+       }
+     }
+   </style>
+ </head>
+ <body>
+   <div class="container">
+     <div class="header">
+       <h1>Prevenção da Dengue</h1>
+       <p>Aprenda sobre a doença, seus sintomas e como evitá-la</p>
+     </div>
+     <div class="nav">
+       <a href="#sobre">Sobre</a>
+       <a href="#sintomas">Sintomas</a>
+       <a href="#prevencao">Prevenção</a>
+       <a href="#quiz">Quiz</a>
+       <a href="#mapa">Mapa</a>
+     </div>
+     <div class="main" id="sobre">
+       <div class="card">
+         <img src="mosquito.jpg" alt="Mosquito Aedes Aegypti">
+         <h3>O que é a dengue?</h3>
+         <p>A dengue é uma doença transmitida pela picada da fêmea do mosquito Aedes Aegypti, que possui quatro sorotipos diferentes. A dengue pode causar febre, dor de cabeça, dor no corpo, manchas na pele e até complicações graves como hemorragia e choque.</p>
+         <button onclick="showMore('sobre1')">Saiba mais</button>
+         <p id="sobre1" style="display: none;">A dengue é uma doença viral que afeta cerca de 390 milhões de pessoas por ano no mundo, sendo mais comum em regiões tropicais e subtropicais. A dengue pode ser classificada em quatro tipos: dengue clássica, dengue hemorrágica, síndrome do choque da dengue e dengue com sinais de alarme. A dengue hemorrágica e a síndrome do choque da dengue são as formas mais graves e podem levar à morte se não tratadas adequadamente.</p>
+       </div>
+       <div class="card">
+         <img src="transmissao.jpg" alt="Transmissão da dengue">
+         <h3>Como a dengue se espalha?</h3>
+         <p>A dengue se espalha pela picada da fêmea do mosquito Aedes Aegypti, que se infecta ao sugar o sangue de uma pessoa doente. O mosquito pode transmitir a doença para outras pessoas após um período de incubação de 8 a 12 dias. A pessoa infectada pode transmitir o vírus para os mosquitos até 6 dias após o início dos sintomas.</p>
+         <button onclick="showMore('sobre2')">Saiba mais</button>
+         <p id="sobre2" style="display: none;">O mosquito Aedes Aegypti é originário da África e foi introduzido no Brasil durante o período colonial. Ele se adapta facilmente ao ambiente urbano e se reproduz em locais com água parada, como pneus, garrafas, vasos de plantas e caixas d'água. O mosquito tem hábitos diurnos e costuma picar as pessoas nas primeiras horas da manhã e no final da tarde. Ele prefere picar as partes inferiores do corpo, como pernas, pés e tornozelos.</p>
+       </div>
+       <div class="card">
+         <img src="vacina.jpg" alt="Vacina contra a dengue">
+         <h3>Existe vacina contra a dengue?</h3>
+         <p>Sim, existe uma vacina contra a dengue chamada Dengvaxia, que está disponível para pessoas acima de 45 anos que já tiveram dengue mais de uma vez e/ ou moram em áreas com muitos casos de dengue. A vacina protege contra os quatro sorotipos da doença e deve ser aplicada em três doses com intervalo de seis meses entre elas.</p>
+         <button onclick="showMore('sobre3')">Saiba mais</button>
+         <p id="sobre3" style="display: none;">A vacina contra a dengue foi desenvolvida pela empresa francesa Sanofi Pasteur e foi aprovada pela Anvisa em 2015. Ela é feita com vírus atenuados da dengue e estimula o sistema imunológico a produzir anticorpos contra a doença. A vacina tem uma eficácia média de 66% e pode reduzir em até 93% os casos graves de dengue. No entanto, a vacina não é recomendada para pessoas que nunca tiveram dengue, pois pode aumentar o risco de desenvolver formas mais graves da doença em caso de infecção.</p>
+       </div>
+     </div>
+     <div class="main" id="sintomas">
+       <div class="card">
+         <img src="febre.jpg" alt="Febre alta">
+         <h3>Febre alta</h3>
+         <p>A febre alta é um dos principais sintomas da dengue. Ela costuma ter início súbito e pode variar entre 39ºC e 40ºC. A febre pode durar de dois a sete dias e pode ser acompanhada de calafrios, sudorese e mal-estar geral.</p>
+         <button onclick="showMore('sintoma1')">Saiba mais</button>
+         <p id="sintoma1" style="display: none;">A febre alta é uma resposta do organismo à infecção pelo vírus da dengue. Ela indica que o sistema imunológico está combatendo o agente invasor e tentando eliminar o vírus do corpo. A febre alta pode causar desidratação, dor de cabeça,         fadiga e perda de apetite. É importante medir a temperatura com um termômetro e tomar medicamentos antitérmicos, como paracetamol, para aliviar o desconforto. Evite tomar medicamentos que contenham ácido acetilsalicílico, como aspirina, pois eles podem aumentar o risco de sangramento.</p>
+        </div>
+        <div class="card">
+          <img src="dor.jpg" alt="Dor de cabeça e no corpo">
+          <h3>Dor de cabeça e no corpo</h3>
+          <p>A dor de cabeça e no corpo são outros sintomas comuns da dengue. A dor de cabeça costuma ser intensa e localizada na região frontal ou atrás dos olhos. A dor no corpo pode afetar os músculos, as articulações e os ossos, causando dificuldade para se movimentar. A dor pode ser mais forte nas costas, no abdômen e nas pernas.</p>
+          <button onclick="showMore('sintoma2')">Saiba mais</button>
+          <p id="sintoma2" style="display: none;">A dor de cabeça e no corpo são causadas pela inflamação provocada pelo vírus da dengue nos tecidos do organismo. A dor pode ser aliviada com medicamentos analgésicos, como paracetamol, e com medidas simples, como compressas frias na testa ou nos olhos, massagens suaves nas áreas doloridas e repouso. Evite fazer esforços físicos ou atividades que possam piorar a dor.</p>
+        </div>
+        <div class="card">
+          <img src="mancha.jpg" alt="Manchas na pele">
+          <h3>Manchas na pele</h3>
+          <p>As manchas na pele são outro sinal característico da dengue. Elas costumam aparecer entre o segundo e o quinto dia da doença e se manifestam como pequenas erupções vermelhas ou roxas que podem coçar ou arder. As manchas podem surgir em qualquer parte do corpo, mas são mais frequentes no tórax, nos braços e nas pernas.</p>
+          <button onclick="showMore('sintoma3')">Saiba mais</button>
+          <p id="sintoma3" style="display: none;">As manchas na pele são resultado da alteração dos vasos sanguíneos causada pelo vírus da dengue. Elas podem indicar uma diminuição das plaquetas, que são as células responsáveis pela coagulação do sangue. As manchas podem ser confundidas com alergias ou outras doenças de pele, por isso é importante consultar um médico para confirmar o diagnóstico. As manchas tendem a desaparecer após a cura da dengue, sem deixar cicatrizes.</p>
+        </div>
+      </div>
+      <div class="main" id="prevencao">
+        <div class="card">
+          <img src="agua.jpg" alt="Elimine a água parada">
+          <h3>Elimine a água parada</h3>
+          <p>A melhor forma de prevenir a dengue é eliminar os possíveis criadouros do mosquito Aedes Aegypti, que se reproduz em locais com água parada. Por isso, é importante verificar e limpar periodicamente os recipientes que possam acumular água, como pneus, garrafas, vasos de plantas, caixas d'água, calhas e ralos.</p>
+          <button onclick="showMore('prevencao1')">Saiba mais</button>
+          <p id="prevencao1" style="display: none;">Para eliminar a água parada, siga as seguintes recomendações:
+            - Tampe bem as caixas d'água, cisternas e poços.
+            - Coloque areia nos pratos dos vasos de plantas ou elimine-os.
+            - Descarte corretamente os pneus velhos ou fure-os para evitar o acúmulo de água.
+            - Esvazie e limpe as garrafas e latas antes de jogá-las no lixo.
+            - Mantenha as calhas e os ralos desentupidos e limpos.
+            - Coloque telas nas janelas e portas para impedir a entrada dos mosquitos.</p>
+        </div>
+        <div class="card">
+          <img src="repelente.jpg" alt="Use repelente e roupas adequadas">
+          <h3>Use repelente e roupas adequadas</h3>
+          <p>Outra forma de prevenir a dengue é evitar a picada do mosquito Aedes Aegypti, que tem hábitos diurnos e costuma picar as partes inferiores do corpo. Por isso, é recomendado usar repelente nas áreas expostas da pele e reaplicá-lo conforme as instruções do fabricante. Além disso, é aconselhável usar roupas claras, compridas e que cubram o máximo possível do corpo.</p>
+          <button onclick="showMore('prevencao2')">Saiba mais</button>
+          <p id="prevencao2" style="display: none;">Para usar o repelente de forma segura, siga as seguintes orientações:
+            - Escolha um repelente adequado para a sua idade e o seu tipo de pele.
+            - Aplique o repelente somente nas áreas expostas da pele e evite o contato com os olhos, a boca e as mucosas.
+            - Não aplique o repelente por cima de roupas, protetor solar ou maquiagem.
+            - Não use o repelente em crianças menores de dois anos ou em gestantes sem orientação médica.
+            - Lave as mãos após a aplicação do repelente e remova-o com água e sabão ao final do dia.</p>
+        </div>
+        <div class="card">
+          <img src="medico.jpg" alt="Procure um médico se tiver sintomas">
+          <h3>Procure um médico se tiver sintomas</h3>
+          <p>Se você tiver sintomas de dengue, como febre alta, dor de cabeça, dor no corpo ou manchas na pele, procure um médico o quanto antes para fazer o diagnóstico e iniciar o tratamento adequado. Não se automedique nem tome remédios sem prescrição médica, pois eles podem agravar o quadro ou causar efeitos colaterais. Siga as orientações do médico e faça o repouso necessário para se recuperar.</p>
+          <button onclick="showMore('prevencao3')">Saiba mais</button>
+          <p id="prevencao3" style="display: none;">Para diagnosticar a dengue, o médico irá avaliar os seus sintomas, o seu histórico de saúde e o seu contato com áreas de risco. Ele também poderá solicitar exames de sangue para confirmar a presença do vírus da dengue e verificar o nível das plaquetas. O tratamento da dengue consiste em aliviar os sintomas e evitar as complicações. O médico poderá receitar medicamentos antitérmicos, analgésicos e anti-inflamatórios, além de orientar sobre a hidratação e a alimentação adequadas. Em casos graves, pode ser necessário fazer uma transfusão de sangue ou uma internação hospitalar.</p>
+        </div>
+      </div>
+      <div class="main" id="quiz">
+        <div class="card">
+          <h3>Teste o seu conhecimento sobre a dengue</h3>
+          <p>Você acha que sabe tudo sobre a dengue? Então responda este quiz e descubra se você está por dentro da doença, seus sintomas e sua prevenção. São 10 perguntas de múltipla escolha que vão testar o seu conhecimento. Boa sorte!</p>
+          <button onclick="startQuiz()">Iniciar quiz</button>
+          <div id="quiz" style="display: none;">
+            <p id="question"></p>
+            <input type="radio" id="a" name="answer" value="a">
+            <label for="a" id="label-a"></label><br>
+            <input type="radio" id="b" name="answer" value="b">
+            <label for="b" id="label-b"></label><br>
+            <input type="radio" id="c" name="answer" value="c">
+            <label for="c" id="label-c"></label><br>
+            <input type="radio" id="d" name="answer" value="d">
+            <label for="d" id="label-d"></label><br>
+            <button onclick="checkAnswer()">Verificar resposta</button>
+            <p id="feedback"></p>
+            <button onclick="nextQuestion()" id="next" style="display: none;">Próxima pergunta</button>
+            <p id="score"></p>
+          </div>
+        </div>
+      </div>
+      <div class="main" id="mapa">
+        <div class="card">
+          <h3>Veja as áreas de risco de dengue no Brasil</h3>
+          <p>Você quer saber quais são as regiões do Brasil que têm mais casos de dengue? Então confira este mapa interativo que mostra as áreas de risco de dengue no país, baseado nos dados do Ministério da Saúde. Você pode clicar nos estados para ver o número de casos confirmados, a incidência e a taxa de mortalidade por dengue em cada um deles.</p>
+          <button onclick="showMap()">Mostrar mapa</button>
+          <div id="map" style="display: none;">
+            <!-- Aqui vai o código para gerar o mapa usando uma API externa -->
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <p>Esta página foi criada pelo Bing, um especialista em programação com mais de 20 anos de estudo.</p>
+        <p>Os dados e informações contidos nesta página foram obtidos a partir dos resultados da pesquisa web    e podem não estar atualizados ou completos.</p>
+        <p>Esta página tem fins educativos e não substitui a consulta médica. Se você tiver sintomas de dengue, procure um médico imediatamente.</p>
+      </div>
+    </div>
+    <script>
+var quizData = [
+  {
+    question: "Qual é o nome do mosquito que transmite a dengue?",
+    options: ["Aedes Aegypti", "Anopheles Gambiae", "Culex Quinquefasciatus", "Mansonia Uniformis"],
+    answer: "a"
+  },
+  {
+    question: "Quantos sorotipos diferentes de dengue existem?",
+    options: ["Dois", "Quatro", "Seis", "Oito"],
+    answer: "b"
+  },
+  {
+    question: "Qual é o principal sintoma da dengue?",
+    options: ["Febre alta", "Tosse seca", "Diarreia", "Vômito"],
+    answer: "a"
+  },
+  {
+    question: "Qual é a complicação mais grave da dengue?",
+    options: ["Síndrome do choque da dengue", "Síndrome respiratória aguda grave", "Síndrome hemolítico-urêmica", "Síndrome de Guillain-Barré"],
+    answer: "a"
+  },
+  {
+    question: "Qual é o nome da vacina contra a dengue?",
+    options: ["Dengvaxia", "Dengrix", "Dengavax", "Dengarix"],
+    answer: "a"
+  },
+  {
+    question: "Em que tipo de local o mosquito da dengue se reproduz?",
+    options: ["Água parada", "Água corrente", "Água salgada", "Água mineral"],
+    answer: "a"
+  },
+  {
+    question: "Qual é o horário de maior atividade do mosquito da dengue?",
+    options: ["Manhã e tarde", "Noite e madrugada", "Meio-dia e crepúsculo", "Qualquer horário"],
+    answer: "a"
+  },
+  {
+    question: "Qual é o tipo de roupa mais adequado para evitar a picada do mosquito da dengue?",
+    options: ["Roupas claras, compridas e que cubram o máximo possível do corpo", "Roupas escuras, curtas e que deixem o corpo exposto", "Roupas coloridas, justas e que atraiam a atenção do mosquito", "Não há diferença entre os tipos de roupa"],
+    answer: "a"
+  },
+  {
+    question: "Qual é o medicamento mais indicado para aliviar a febre e a dor causadas pela dengue?",
+    options: ["Paracetamol", "Ácido acetilsalicílico", "Ibuprofeno", "Diclofenaco"],
+    answer: "a"
+  },
+  {
+    question: "Qual é a região do Brasil que teve mais casos de dengue em 2023?",
+    options: ["Região Norte", "Região Nordeste", "Região Centro-Oeste", "Região Sudeste"],
+    answer: "c"
+  }
 ];
-
-// Criar uma classe para representar uma peça do tetris
-class Tetromino {
-    constructor(shapeIndex) {
-        // Escolher uma forma aleatória se não for especificada
-        if (shapeIndex === undefined) {
-            shapeIndex = Math.floor(Math.random() * shapes.length);
-        }
-        // Obter a forma e a cor correspondente
-        this.shape = shapes[shapeIndex];
-        this.color = colors[shapeIndex];
-        // Criar um grupo para armazenar os blocos da peça
-        this.group = new THREE.Group();
-        // Adicionar os blocos da peça ao grupo
-        for (var i = 0; i < this.shape.length; i++) {
-            for (var j = 0; j < this.shape[i].length; j++) {
-                if (this.shape[i][j] === 1) {
-                    // Criar um bloco com a cor da peça
-                    var block = new THREE.Mesh(
-                        new THREE.BoxGeometry(1, 1, 1),
-                        new THREE.MeshLambertMaterial({color: this.color})
-                    );
-                    // Posicionar o bloco de acordo com a forma da peça
-                    block.position.set(j - this.shape[i].length / 2 + 0.5,
-                                       -i + this.shape.length / 2 - 0.5,
-                                       -10);
-                    // Adicionar o bloco ao grupo da peça
-                    this.group.add(block);
-                }
-            }
-        }
-        // Adicionar o grupo da peça ao grupo do tetris
-        tetrisGroup.add(this.group);
-        // Inicializar a posição e a rotação da peça
-        this.x = Math.floor(Math.random() * (10 - this.shape[0].length));
-        this.y = -2;
-        this.angle = Math.floor(Math.random() * (4 - this.shape.length));
-        // Atualizar a posição e a rotação da peça de acordo com os atributos
-        this.update();
-    }
-
-    // Método para atualizar a posição e a rotação da peça de acordo com os atributos
-    update() {
-        // Rotacionar o grupo da peça de acordo com o ângulo
-        this.group.rotation.z = this.angle * Math.PI / 2;
-        // Posicionar o grupo da peça de acordo com as coordenadas
-        this.group.position.x = this.x + this.shape[0].length / 2 - 0.5;
-        this.group.position.y = this.y - this.shape.length / 2 + 0.5;
-    }
-
-    // Método para mover a peça para a esquerda
-    moveLeft() {
-        // Decrementar a coordenada x
-        this.x--;
-        // Verificar se a peça está dentro dos limites e não colide com outras peças
-        if (this.x < 0 || this.collides()) {
-            // Incrementar a coordenada x
-            this.x++;
-            // Retornar falso para indicar que a peça não pode se mover
-            return false;
-        }
-        // Atualizar a posição da peça
-        this.update();
-        // Retornar verdadeiro para indicar que a peça pode se mover
-        return true;
-    }
-
-    // Método para mover a peça para a direita
-    moveRight() {
-        // Incrementar a coordenada x
-        this.x++;
-        // Verificar se a peça está dentro dos limites e não colide com outras peças
-        if (this.x > 10 - this.shape[0].length || this.collides()) {
-            // Decrementar a coordenada x
-            this.x--;
-            // Retornar falso para indicar que a peça não pode se mover
-            return false;
-        }
-        // Atualizar a posição da peça
-        this.update();
-        // Retornar verdadeiro para indicar que a peça pode se mover
-        return true;
-    }
-
-    // Método para mover a peça para baixo
-    moveDown() {
-        // Decrementar a coordenada y
-        this.y--;
-        // Verificar se a peça está dentro dos limites e não colide com outras peças
-        if (this.y < -20 + this.shape.length || this.collides()) {
-            // Incrementar a coordenada y
-            this.y++;
-            // Retornar falso para indicar que a peça não pode se mover
-            return false;
-        }
-        // Atualizar a posição da peça
-        this.update();
-        // Retornar verdadeiro para indicar que a peça pode se mover
-        return true;
-    }
-
-    // Método para rotacionar a peça no sentido horário
-    rotateClockwise() {
-        // Incrementar o ângulo
-        this.angle++;
-        // Verificar se o ângulo é válido de acordo com a forma da peça
-        if (this.angle > 3 - this.shape.length) {
-            // Zerar o ângulo
-            this.angle = 0;
-        }
-        // Verificar se a peça está dentro dos limites e não colide com outras peças
-        if (this.x < 0 || 
-            this.x > 10 - this.shape[0].length ||
-            this.y < -20 + this.shape.length ||
-            this.collides()) {
-            // Decrementar o ângulo
-            this.angle--;
-            // Verificar se o ângulo é válido de acordo com a forma da peça
-            if (this.angle < 0) {
-                // Atribuir o valor máximo ao ângulo
-                this.angle = 3 - this.shape.length;
-            }
-            // Retornar falso para indicar que a peça não pode rotacionar
-            return false;
-        }
-        // Atualizar a posição e a rotação da peça
-        this.update();
-        // Retornar verdadeiro para indicar que a peça pode rotacionar
-        return true;
-    }
-
-    // Método para rotacionar a peça no sentido anti-horário
-    rotateCounterClockwise() {
-         // Decrementar o ângulo
-         this.angle--;
-         // Verificar se o ângulo é válido de acordo com a forma da peça
-         if (this.angle < 0) {
-             // Atribuir o valor máximo ao ângulo
-             this.angle = 3 - this.shape.length;
-         }
-         // Verificar se a peça está dentro dos limites e não colide com outras peças
-         if (this.x < 0 || 
-             this.x > 10 - this.shape[0].length ||
-             this.y < -20 + this.shape.length ||
-             this.collides()) {
-             // Incrementar o ângulo
-             this.angle++;
-             // Verificar se o ângulo é válido de acordo com a forma da peça
-             this.angle > 3 - this.shape.length; {
-                // Zerar o ângulo
-                this.angle = 0;
-            }
-            // Retornar falso para indicar que a peça não pode rotacionar
-            return false;
-        }
-        // Atualizar a posição e a rotação da peça
-        this.update();
-        // Retornar verdadeiro para indicar que a peça pode rotacionar
-        return true;
-   }
-
-   // Método para verificar se a peça colide com outras peças ou com as bordas do tabuleiro
-   collides() {
-       // Obter a matriz de ocupação do tabuleiro
-       var board = game.board;
-       // Iterar sobre os blocos da peça
-       for (var i = 0; i < this.shape.length; i++) {
-           for (var j = 0; j < this.shape[i].length; j++) {
-               if (this.shape[i][j] === 1) {
-                   // Obter as coordenadas do bloco no tabuleiro
-                   var x = this.x + j;
-                   var y = this.y - i;
-                   // Rotacionar as coordenadas de acordo com o ângulo da peça
-                   switch (this.angle) {
-                       case 1:
-                           x = this.x + i;
-                           y = this.y + j - this.shape.length + 1;
-                           break;
-                       case 2:
-                           x = this.x - j + this.shape[0].length - 1;
-                           y = this.y + i - this.shape.length + 1;
-                           break;
-                       case 3:
-                           x = this.x - i + this.shape[0].length - 1;
-                           y = this.y - j;
-                           break;
-                   }
-                   // Verificar se as coordenadas estão fora dos limites do tabuleiro ou se há um bloco ocupando a posição
-                   if (x < 0 || x > 9 || y < 0 || y > 19 || board[y][x] !== 0) {
-                       // Retornar verdadeiro para indicar que há uma colisão
-                       return true;
-                   }
-               }
-           }
-       }
-       // Retornar falso para indicar que não há uma colisão
-       return false;
-   }
-
-   // Método para fixar a peça no tabuleiro
-   fix() {
-       // Obter a matriz de ocupação do tabuleiro
-       var board = game.board;
-       // Iterar sobre os blocos da peça
-       for (var i = 0; i < this.shape.length; i++) {
-           for (var j = 0; j < this.shape[i].length; j++) {
-               if (this.shape[i][j] === 1) {
-                   // Obter as coordenadas do bloco no tabuleiro
-                   var x = this.x + j;
-                   var y = this.y - i;
-                   // Rotacionar as coordenadas de acordo com o ângulo da peça
-                   switch (this.angle) {
-                       case 1:
-                           x = this.x + i;
-                           y = this.y + j - this.shape.length + 1;
-                           break;
-                       case 2:
-                           x = this.x - j + this.shape[0].length - 1;
-                           y = this.y + i - this.shape.length + 1;
-                           break;
-                       case 3:
-                           x = this.x - i + this.shape[0].length - 1;
-                           y = this.y - j;
-                           break;
-                   }
-                   // Atribuir a cor da peça à posição correspondente na matriz do tabuleiro
-                   board[y][x] = this.color;
-               }
-           }
-       }
-   }
-}
-
-// Criar uma classe para representar o jogo do tetris
-class TetrisGame {
-   constructor() {
-       // Inicializar a pontuação e o nível do jogo
-       this.score = 0;
-       this.level = 1;
-       // Inicializar o intervalo de tempo entre as quedas das peças
-       this.dropInterval = 1000;
-       // Inicializar o contador de tempo
-       this.dropCounter = 0;
-       // Inicializar o estado do jogo
-       this.running = true;
-       // Inicializar a matriz de ocupação do tabuleiro com zeros
-       this.board = [];
-       for (var i = 0; i < 20; i++) {
-           var row = [];
-           for (var j = 0; j < 10; j++) {
-               row.push(0);
-           }
-           this.board.push(row);
-       }
-       // Criar uma peça atual e uma próxima
-       this.currentTetromino = new Tetromino();
-       this.nextTetromino = new Tetromino();
-       // Criar um grupo para armazenar os blocos do tabuleiro
-       this.boardGroup = new THREE.Group();
-       // Adicionar o grupo do tabuleiro à cena
-       scene.add(this.boardGroup);
-       // Criar um grupo para armazenar os blocos da próxima peça
-       this.nextGroup = new THREE.Group();
-       // Posicionar o grupo da próxima peça no canto superior direito da tela
-       this.nextGroup.position.set(8, 18, -10);
-       // Adicionar o grupo da próxima peça à cena
-       scene.add(this.nextGroup);
-       // Atualizar os blocos da próxima peça de acordo com a forma e a cor
-       this.updateNext();
-       // Criar um elemento de texto para mostrar a pontuação e o nível do jogo
-       this.textElement = document.createElement("div");
-       this.textElement.style.position = "absolute";
-       this.textElement.style.top = "10px";
-       this.textElement.style.left = "10px";
-       this.textElement.style.color = "white";
-       this.textElement.style.fontFamily = "Arial";
-       this.textElement.style.fontSize = "20px";
-       this.textElement.innerHTML = `Pontuação: ${this.score}<br>Nível: ${this.level}`;
-       document.body.appendChild(this.textElement);
-   }
-
-   // Método para atualizar o jogo de acordo com o tempo decorrido
-   update(deltaTime) {
-       // Verificar se o jogo está em execução
-       if (this.running) {
-           // Incrementar o contador de tempo
-           this.dropCounter += deltaTime;
-           // Verificar se o contador de tempo ultrapassou o intervalo de queda
-           if (this.dropCounter > this.dropInterval) {
-               // Zerar o contador de tempo
-               this.dropCounter = 0;
-               // Mover a peça atual para baixo
-               var moved = this.currentTetromino.moveDown();
-               // Verificar se a peça não pode se mover mais
-               if (!moved) {
-                   // Fixar a peça no tabuleiro
-                   this.currentTetromino.fix();
-                   // Remover as linhas completas do tabuleiro e atualizar a pontuação e o nível
-                   this.removeLines();
-                   // Verificar se o jogo acabou
-                   if (this.isGameOver()) {
-                       // Parar o jogo e mostrar uma mensagem de fim de jogo
-                       this.stop();
-                       alert("Fim de jogo!");
-                   } else {
-                       // Substituir a peça atual pela próxima e criar uma nova próxima peça
-                       this.currentTetromino = this.nextTetromino;
-                       this.nextTetromino = new Tetromino();
-                       // Atualizar os blocos da próxima peça de acordo com a forma e a cor
-                       this.updateNext();
-                   }
-               }
-           }
-           // Atualizar os blocos do tabuleiro de acordo com a matriz de ocupação
-           this.updateBoard();
-           // Atualizar o texto da pontuação e do nível do jogo
-           this.updateText();
-       }
-   }
-
-   // Método para atualizar os blocos do tabuleiro de acordo com a matriz de ocupação
-   updateBoard() {
-       // Remover todos os blocos do grupo do tabuleiro
-       while (this.boardGroup.children.length > 0) {
-           var block = this.boardGroup.children[0];
-           this.boardGroup.remove(block);
-           block.geometry.dispose();
-           block.material.dispose();
-           block = undefined;
-       }
-       // Iterar sobre as posições da matriz do tabuleiro
-       for (var i = 0; i < 20; i++) {
-           for (var j = 0; j < 10; j++) {
-               // Verificar se há uma cor na posição correspondente
-               if (this.board[i][j] !== 0) {
-                   // Criar um bloco com a cor da posição
-                   var block = new THREE.Mesh(
-                       new THREE.BoxGeometry(1, 1, 1),
-                       new THREE.MeshLambertMaterial({color: this.board[i][j]})
-                   );
-                   // Posicionar o bloco de acordo com as coordenadas da posição
-                   block.position.set(j - 4.5, -i + 9.5, -10);
-                   // Adicionar o bloco ao grupo do tabuleiro
-                   this.boardGroup.add(block);
-               }
-           }
-       }
-   }
-
-   // Método para atualizar os blocos da próxima peça de acordo com a forma e a cor
-   updateNext() {
-        // Remover todos os blocos do grupo da próxima peça
-        while (this.nextGroup.children.length > 0) {
-            var block = this.nextGroup.children[0];
-            this.nextGroup.remove(block);
-            block.geometry.dispose();
-            block.material.dispose();
-            block = undefined;
-        }
-        // Iterar sobre os blocos da próxima peça
-        for (var i = 0; i < this.nextTetromino.shape.length; i++) {
-            for (var j = 0; j < this.nextTetromino.shape[i].length; j++) {
-                if (this.nextTetromino.shape[i][j] === 1) {
-                    // Criar um bloco com a cor da próxima peça
-                    var block = new THREE.Mesh(
-                        new THREE.BoxGeometry(1, 1, 1),
-                        new THREE.MeshLambertMaterial({color: this.nextTetromino.color})
-                    );
-                    // Posicionar o bloco de acordo com a forma da próxima peça
-                    block.position.set(j - this.nextTetromino.shape[i].length / 2 + 0.5,
-                                       -i + this.nextTetromino.shape.length / 2 - 0.5,
-                                       0);
-                    // Adicionar o bloco ao grupo da próxima peça
-                    this.nextGroup.add(block);
-                }
-            }
-        }
-    }
-
-    // Método para atualizar o texto da pontuação e do nível do jogo
-    updateText() {
-        // Atribuir o valor da pontuação e do nível ao elemento de texto
-        this.textElement.innerHTML = `Pontuação: ${this.score}<br>Nível: ${this.level}`;
-    }
-
-    // Método para remover as linhas completas do tabuleiro e atualizar a pontuação e o nível
-    removeLines() {
-        // Inicializar o número de linhas removidas
-        var linesRemoved = 0;
-        // Iterar sobre as linhas do tabuleiro de baixo para cima
-        for (var i = 19; i >= 0; i--) {
-            // Verificar se a linha está completa
-            var isComplete = true;
-            for (var j = 0; j < 10; j++) {
-                if (this.board[i][j] === 0) {
-                    isComplete = false;
-                    break;
-                }
-            }
-            // Se a linha está completa
-            if (isComplete) {
-                // Incrementar o número de linhas removidas
-                linesRemoved++;
-                // Remover a linha da matriz do tabuleiro
-                this.board.splice(i, 1);
-                // Adicionar uma nova linha vazia no topo da matriz do tabuleiro
-                var newRow = [];
-                for (var j = 0; j < 10; j++) {
-                    newRow.push(0);
-                }
-                this.board.unshift(newRow);
-                // Incrementar o índice da iteração para não pular uma linha
-                i++;
-            }
-        }
-        // Se alguma linha foi removida
-        if (linesRemoved > 0) {
-            // Calcular os pontos ganhos de acordo com o número de linhas removidas e o nível atual
-            var points = [40, 100, 300, 1200][linesRemoved - 1] * this.level;
-            // Incrementar a pontuação com os pontos ganhos
-            this.score += points;
-            // Calcular o nível atual de acordo com a pontuação
-            this.level = Math.floor(this.score / 1000) + 1;
-            // Ajustar o intervalo de queda de acordo com o nível atual
-            this.dropInterval = Math.max(100, 1000 - (this.level - 1) * 100);
-        }
-    }
-
-    // Método para verificar se o jogo acabou
-    isGameOver() {
-        // Verificar se há algum bloco na linha superior do tabuleiro
-        for (var j = 0; j < 10; j++) {
-            if (this.board[0][j] !== 0) {
-                // Retornar verdadeiro para indicar que o jogo acabou
-                return true;
-            }
-        }
-        // Retornar falso para indicar que o jogo não acabou
-        return false;
-    }
-
-    // Método para parar o jogo
-    stop() {
-        // Alterar o estado do jogo para parado
-        this.running = false;
-    }
-
-    // Método para reiniciar o jogo
-    restart() {
-        // Alterar o estado do jogo para em execução
-        this.running = true;
-        // Zerar a pontuação e o nível do jogo
-        this.score = 0;
-        this.level = 1;
-        // Zerar o intervalo de queda e o contador de tempo
-        this.dropInterval = 1000;
-        this.dropCounter = 0;
-        // Limpar a matriz do tabuleiro
-        for (var i = 0; i < 20; i++) {
-            for (var j = 0; j < 10; j++) {
-                this.board[i][j] = 0;
-            }
-        }
-        // Criar uma nova peça atual e uma próxima
-        this.currentTetromino = new Tetromino();
-        this.nextTetromino = new Tetromino();
-        // Atualizar os blocos da próxima peça de acordo com a forma e a cor
-        this.updateNext();
-    }
-}
-
-// Criar uma instância do jogo do tetris
-var game = new TetrisGame();
-
-// Criar uma variável para armazenar o tempo anterior
-var previousTime = 0;
-
-// Criar uma função para animar o jogo
-function animate(time) {
-    // Calcular o tempo decorrido desde a última animação
-    var deltaTime = time - previousTime;
-    // Atualizar o tempo anterior
-    previousTime = time;
-    // Atualizar o jogo de acordo com o tempo decorrido
-    game.update(deltaTime);
-    // Renderizar a cena
-    renderer.render(scene, camera);
-    // Solicitar a próxima animação
-    requestAnimationFrame(animate);
-}
-
-// Solicitar a primeira animação
-requestAnimationFrame(animate);
-
-// Criar um objeto para armazenar o estado das teclas pressionadas
-var keys = {};
-
-// Adicionar um evento de tecla pressionada ao documento
-document.addEventListener("keydown", function(event) {
-    // Obter o código da tecla pressionada
-    var keyCode = event.keyCode;
-    // Verificar se a tecla não estava pressionada antes
-    if (!keys[keyCode]) {
-        // Atribuir verdadeiro ao estado da tecla
-        keys[keyCode] = true;
-        // Verificar se o jogo está em execução
-        if (game.running) {
-            // Verificar qual tecla foi pressionada e executar a ação correspondente
-            switch (keyCode) {
-                case 37: // Seta para esquerda
-                    game.currentTetromino.moveLeft();
-                    break;
-                case 39: // Seta para direita
-                    game.currentTetromino.moveRight();
-                    break;
-                case 40: // Seta para baixo
-                    game.currentTetromino.moveDown();
-                    break;
-                case 38: // Seta para cima
-                    game.currentTetromino.rotateClockwise();
-                    break;
-                case 90: // Tecla Z
-                    game.currentTetromino.rotateCounterClockwise();
-                    break;
-            }
-        } else {
-            // Se o jogo não está em execução, verificar se a tecla R foi pressionada para reiniciar o jogo
-            if (keyCode === 82) {
-                game.restart();
-            }
-        }
-    }
-});
-
-// Adicionar um evento de tecla solta ao documento
-document.addEventListener("keyup", function(event) {
-    // Obter o código da tecla solta
-    var keyCode = event.keyCode;
-    // Atribuir falso ao estado da tecla
-    keys[keyCode] = false;
-});
-
-</script>
-</html>
+    </script>
+  </body>
+ </html>
+ 
+ 
